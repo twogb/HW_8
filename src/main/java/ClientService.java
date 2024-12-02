@@ -9,11 +9,17 @@ public class ClientService {
     private Database db;
 
     public ClientService(Database db) throws SQLException {
+        if (db == null) {
+            throw new IllegalArgumentException("Database instance cannot be null.");
+        }
         this.db = db;
-
     }
 
     public long create(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null or empty.");
+        }
+
         long id;
         String sql = "INSERT INTO client (name) VALUES (?)";
         Connection conn = db.getConnection();
@@ -34,6 +40,10 @@ public class ClientService {
     }
 
     public String getById(long id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("ID must be greater than 0.");
+        }
+
         String name = null;
         String sql = "SELECT NAME FROM client WHERE id = (?)";
         Connection conn = db.getConnection();
@@ -55,11 +65,16 @@ public class ClientService {
     }
 
     public void setName(long id, String name) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("ID must be greater than 0.");
+        }
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null or empty.");
+        }
 
         String sql = "UPDATE clients SET name = ? WHERE id = ?";
         Connection connection = db.getConnection();
-        try (
-                PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, name);
             statement.setLong(2, id);
 
@@ -73,6 +88,9 @@ public class ClientService {
     }
 
     public void deleteById(long id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("ID must be greater than 0.");
+        }
 
         String sql = "DELETE FROM clients WHERE id = ?";
         Connection connection = db.getConnection();
